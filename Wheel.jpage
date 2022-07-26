@@ -49,6 +49,16 @@ public getSingleStringFromUniqueTradersNamesSortByNameAsc() {
 }
 
 public isSomeTraderFromCity() {
+	boolean isSome = false;
 	
+	List<String> newList = new ArrayList<String>();
+        for (int i=0; i<transactions.size(); i++) {
+            if (!newList.contains(transactions.get(i).getTrader().getCity())) {
+                newList.add(transactions.get(i).getTrader().getCity());
+            }
+        }
+        isSome = newList.stream().anyMatch(str -> str == cityName);
+	
+        return isSome;
 }
 

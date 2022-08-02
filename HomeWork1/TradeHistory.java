@@ -1,3 +1,4 @@
+java
 package cz.cvut.fel.omo.cv10;
 
 import java.util.*;
@@ -15,47 +16,49 @@ public class TradeHistory {
     }
 
     public List<Transaction> findAllTransactionsIn2011AndSortByValueAsc(){
-        List<Transaction> newList = new ArrayList<Transaction>();
-        newList = transactions.stream().sorted(Comparator.comparingInt(Transaction::getValue)).collect(Collectors.toList());
-        newList = newList.stream().filter(t -> t.getYear() == 2011).collect(Collectors.toList());
+        List<Transaction> newList = transactions.stream()
+                .filter(x->x.getYear() == 2011)
+                .sorted(Comparator.comparing(Transaction::getValue))
+                .collect(Collectors.toList());
         return newList;
     }
 
     public List<String> getUniqueCitiesSortedAsc(){
-    	List<City> list = Arrays.asList("Paris","Munich", "London", "Roma", "Tokyo");
-        for (int i=0; i<transactions.size(); i++) {
-            if (!newList.contains(transactions.get(i).getTrader().getCity())) {
-                newList.add(transactions.get(i).getTrader().getCity());
-            }
+        List<String> newList = new ArrayList<String>();
+        for (Transaction t : transactions){
+            if (!newList.contains(t.getTrader().getCity()))
+                newList.add(t.getTrader().getCity());
         }
-        return newList.stream().sorted().collect(Collectors.toList());
+        Collections.sort(newList);
+        return newList;
     }
 
+    /*
+    * String shall start with "Traders:" and use space as separator. E.g.: "Traders: Bob George"
+    *
+     */
     public String getSingleStringFromUniqueTradersNamesSortByNameAsc(){
-        String traderStr = "Traders:";
-        List<Traders> names = Arrays.asList("Lily Evans", "Severus Rogue", "Sirius Black", "Remus Lupin", "Minerva McGonagall");  
-        for (int i=0; i<transactions.size(); i++) {
-            if (!newList.contains(transactions.get(i).getTrader().getName())) {
-                newList.add(transactions.get(i).getTrader().getName());
-            }
+        List<String> newList = new ArrayList<>();
+        for(Transaction t : transactions){
+            if (!newList.contains(t.getTrader().getName()))
+                newList.add(t.getTrader().getName());
         }
-        newList = newList.stream().sorted().collect(Collectors.toList());
-        for (int j=0; j< newList.size(); j++) {
-            traderStr += " " + newList.get(j);
-        }
-        return traderStr;
+        Collections.sort(newList);
+
+        return newList.stream().reduce("Traders:", (partialString, element) -> partialString + " " + element);
     }
 
     public boolean isSomeTraderFromCity(String cityName){
-        boolean isSome = false;
-        List<String> newList = new ArrayList<String>();
-        for (int i=0; i<transactions.size(); i++) {
-            if (!newList.contains(transactions.get(i).getTrader().getCity())) {
-                newList.add(transactions.get(i).getTrader().getCity());
+    	boolean isSome = false;
+    	List<String> newList = new ArrayList<String>();
+            for (int i=0; i<transactions.size(); i++) {
+                if (!newList.contains(transactions.get(i).getTrader().getCity())) {
+                    newList.add(transactions.get(i).getTrader().getCity());
+                }
             }
-        }
-        isSome = newList.stream().anyMatch(str -> str == cityName);
-        return isSome;
+            isSome = newList.stream().anyMatch(str -> str == cityName);
+
+            return isSome;
     }
 
     public Optional<Transaction> findSmallestTransactionUsingReduce(){
